@@ -96,13 +96,17 @@ trait WithState
                     $property->getAttributes()
                 )];
             })
-            ->each(function ($value, string $key) use ($models) {
+            ->map(function ($value, string $key) use ($models) {
                 if ($value instanceof Model) {
                     $models[$key] = [
                         'key' => Crypt::encryptString($value->getKey()),
                         'columns' => Crypt::encryptString(json_encode($value->attributesToArray()))
                     ];
+
+                    return $value->attributesToArray();
                 }
+
+                return $value;
             });
 
         return [
@@ -117,8 +121,6 @@ trait WithState
             $value = $value->__toString();
         } elseif ($value instanceof Castable) {
             $value = $value->toRadio();
-        } elseif ($value instanceof Model) {
-            $value = $value->attributesToArray();
         }
 
         /** @var \ReflectionAttribute[] $attributes */
