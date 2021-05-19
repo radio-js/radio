@@ -49,7 +49,7 @@ trait WithState
         if ($type) {
             if (is_subclass_of($type, Model::class) && data_get($meta, "models.{$key}") !== null) {
                 $primaryKey = data_get($meta, "models.{$key}.key");
-                $columns = data_get($meta, "models.{$key}.columns");
+                $columns = json_decode(Crypt::decryptString(data_get($meta, "models.{$key}.columns")), true);
 
                 $model = $type::query()
                     ->when(array_key_exists(EagerLoad::class, $meta['attributes']), function ($query) use ($meta) {
@@ -100,7 +100,7 @@ trait WithState
                 if ($value instanceof Model) {
                     $models[$key] = [
                         'key' => Crypt::encryptString($value->getKey()),
-                        'columns' => $value->attributesToArray()
+                        'columns' => Crypt::encryptString(json_encode($value->attributesToArray()))
                     ];
                 }
             });
