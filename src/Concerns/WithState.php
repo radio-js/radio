@@ -117,6 +117,8 @@ trait WithState
             $value = $value->__toString();
         } elseif ($value instanceof Castable) {
             $value = $value->toRadio();
+        } elseif ($value instanceof Model) {
+            $value = $value->attributesToArray();
         }
 
         /** @var \ReflectionAttribute[] $attributes */
