@@ -4,15 +4,16 @@ declare(strict_types = 1);
 
 namespace Radio\Concerns;
 
-use Illuminate\Database\Eloquent\Collection as EloquentCollection;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Collection;
-use Illuminate\Support\Stringable;
+use ReflectionProperty;
+use ReflectionAttribute;
+use Radio\Contracts\Castable;
 use Radio\Attributes\Computed;
 use Radio\Attributes\EagerLoad;
-use Radio\Contracts\Castable;
-use ReflectionAttribute;
-use ReflectionProperty;
+use Illuminate\Support\Collection;
+use Illuminate\Support\Stringable;
+use Illuminate\Support\Facades\Crypt;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Collection as EloquentCollection;
 
 trait WithState
 {
@@ -46,14 +47,19 @@ trait WithState
     protected function transformRadioPropertyValueForHydration(string $key, $value, ?string $type = null, array $meta = [])
     {
         if ($type) {
-            if (is_subclass_of($type, Model::class) && $key = data_get($meta, "models.{$key}.key") && $columns = data_get($meta, "models.{$key}.columns")) {
+            if (is_subclass_of($type, Model::class) && data_get($meta, "models.{$key}") !== null) {
+                $primaryKey = data_get($meta, "models.{$key}.key");
+                $columns = data_get($meta, "models.{$key}.columns");
+
                 $model = $type::query()
                     ->when(array_key_exists(EagerLoad::class, $meta['attributes']), function ($query) use ($meta) {
                         $query->with(
                             $meta['attributes'][EagerLoad::class]->relationships
                         );
                     })
-                    ->findOrFail($key);
+                    ->findOrFail(
+                        Crypt::decryptString($primaryKey)
+                    );
                 
                 foreach ($value as $column => $data) {
                     if (! array_key_exists($column, $columns)) continue;
@@ -93,7 +99,7 @@ trait WithState
             ->each(function ($value, string $key) use ($models) {
                 if ($value instanceof Model) {
                     $models[$key] = [
-                        'key' => $value->getKey(),
+                        'key' => Crypt::encryptString($value->getKey()),
                         'columns' => $value->attributesToArray()
                     ];
                 }
