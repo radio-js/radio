@@ -98,6 +98,10 @@ Radio.call = function (options) {
                 return res
             }
 
+            if (json.result && json.result.type === 'redirect') {
+                window.location.assign(json.result.target)
+            }
+
             Object.entries(json.state).forEach(entry => {
                 const [key, value] = entry
 
