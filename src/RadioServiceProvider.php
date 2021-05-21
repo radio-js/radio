@@ -28,7 +28,7 @@ class RadioServiceProvider extends PackageServiceProvider
     public function registerBladeDirectives(): static
     {
         Blade::directive('radio', function (string $expression) {
-            return "<?php \Radio\\radio({$expression}); ?>";
+            return "<?php echo \Radio\\radio({$expression}); ?>";
         });
 
         Blade::directive('radioScripts', function () {

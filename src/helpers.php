@@ -8,7 +8,7 @@ use Exception;
 use Illuminate\Support\Facades\URL;
 
 if (! function_exists('Radio\radio')) {
-    function radio(string $component, array $data = []): void {
+    function radio(string $component, array $data = []): string {
         if (! class_exists($component)) {
             throw new Exception("[Radio] Class `{$component}` does not exist.");
         }
@@ -27,6 +27,6 @@ if (! function_exists('Radio\radio')) {
 
         $constructor = htmlspecialchars("Radio.mount(\$el, {$args})");
 
-        echo $constructor;
+        return $constructor;
     }
 }
