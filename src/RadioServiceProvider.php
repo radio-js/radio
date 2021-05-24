@@ -8,6 +8,7 @@ use Exception;
 use Illuminate\Support\Facades\Blade;
 use Spatie\LaravelPackageTools\Package;
 use Spatie\LaravelPackageTools\PackageServiceProvider;
+use Radio\View\Components;
 
 class RadioServiceProvider extends PackageServiceProvider
 {
@@ -17,6 +18,7 @@ class RadioServiceProvider extends PackageServiceProvider
             ->name('radio')
             ->hasAssets()
             ->hasRoute('web')
+            ->hasViews()
             ->hasConfigFile();
     }
 
