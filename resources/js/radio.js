@@ -118,8 +118,6 @@ Radio.call = function (options) {
             }
 
             return json.result
-        }).catch(error => {
-            console.log(error)
         })
     }
 }
